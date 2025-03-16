@@ -30,9 +30,7 @@
         .ad-container {
             text-align: center;
             margin: 10px 0;
-            background: gray;
             padding: 10px;
-            border-radius: 5px;
             display: flex;
             justify-content: center;
         }
@@ -73,33 +71,31 @@
         function displayImages(images) {
             const gallery = document.getElementById('gallery');
             gallery.innerHTML = '';
-            let adIndex = 0;
+            for (let i = 0; i < adKeys.length; i++) {
+                const adDiv = document.createElement('div');
+                adDiv.className = 'ad-container';
+                gallery.appendChild(adDiv);
+                
+                const adScriptConfig = document.createElement('script');
+                adScriptConfig.type = 'text/javascript';
+                adScriptConfig.textContent = `
+                    atOptions = {
+                        'key' : '${adKeys[i]}',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                `;
+                adDiv.appendChild(adScriptConfig);
+                
+                const adScriptInvoke = document.createElement('script');
+                adScriptInvoke.type = 'text/javascript';
+                adScriptInvoke.src = `//roastwearwritten.com/${adKeys[i]}/invoke.js`;
+                adDiv.appendChild(adScriptInvoke);
+            }
+            
             for (let i = 0; i < images.length; i++) {
-                if (i % 3 === 0 && adIndex < adKeys.length) {
-                    const adDiv = document.createElement('div');
-                    adDiv.className = 'ad-container';
-                    gallery.appendChild(adDiv);
-                    
-                    const adScriptConfig = document.createElement('script');
-                    adScriptConfig.type = 'text/javascript';
-                    adScriptConfig.textContent = `
-                        atOptions = {
-                            'key' : '${adKeys[adIndex]}',
-                            'format' : 'iframe',
-                            'height' : 250,
-                            'width' : 300,
-                            'params' : {}
-                        };
-                    `;
-                    adDiv.appendChild(adScriptConfig);
-                    
-                    const adScriptInvoke = document.createElement('script');
-                    adScriptInvoke.type = 'text/javascript';
-                    adScriptInvoke.src = `//roastwearwritten.com/${adKeys[adIndex]}/invoke.js`;
-                    adDiv.appendChild(adScriptInvoke);
-                    
-                    adIndex++;
-                }
                 const img = document.createElement('img');
                 img.src = images[i];
                 img.style.aspectRatio = '2 / 3';
