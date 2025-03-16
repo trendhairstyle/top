@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman dengan Gambar dan Iklan</title>
+    <style>
+        body {
+            width: 500px;
+            background-color: black;
+            color: white;
+            margin: auto;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        article {
+            padding: 15px;
+            text-align: justify;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .ad {
+            background-color: gray;
+            color: black;
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>Judul Halaman</header>
+    <article>
+        <p>Ini adalah artikel yang berisi konten menarik yang bisa dibaca oleh pengunjung.</p>
+    </article>
+    <div class="image-container" id="image-container"></div>
+
+    <script>
+        async function loadImages() {
+            const response = await fetch('/image.txt');
+            const text = await response.text();
+            const links = text.split('\n').map(link => link.trim()).filter(link => link);
+            const container = document.getElementById('image-container');
+            let count = 0;
+
+            for (const link of links) {
+                let img = document.createElement('img');
+                img.src = link;
+                img.onerror = function() {
+                    this.style.display = 'none';
+                };
+                container.appendChild(img);
+                count++;
+                
+                if (count % 3 === 0) {
+                    let ad = document.createElement('div');
+                    ad.className = 'ad';
+                    ad.innerText = 'Iklan';
+                    container.appendChild(ad);
+                }
+            }
+        }
+
+        loadImages();
+    </script>
+</body>
+</html>
 
