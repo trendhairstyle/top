@@ -31,6 +31,8 @@
             background: gray;
             padding: 10px;
             border-radius: 5px;
+            display: flex;
+            justify-content: center;
         }
     </style>
 </head>
@@ -38,6 +40,14 @@
     <div id="gallery"></div>
     
     <script>
+        const adKeys = [
+            '32417884c3de3b64cea14b0307a6b0c1',
+            'a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7',
+            'b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8',
+            'c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9',
+            'd5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0'
+        ];
+
         async function fetchImages() {
             try {
                 const response = await fetch('image.txt');
@@ -63,24 +73,30 @@
             gallery.innerHTML = '';
             let adIndex = 0;
             for (let i = 0; i < images.length; i++) {
-                if (i % 3 === 0) {
+                if (i % 3 === 0 && adIndex < adKeys.length) {
+                    const adDiv = document.createElement('div');
+                    adDiv.className = 'ad-container';
+                    gallery.appendChild(adDiv);
+                    
+                    const adScriptConfig = document.createElement('script');
+                    adScriptConfig.type = 'text/javascript';
+                    adScriptConfig.textContent = `
+                        atOptions = {
+                            'key' : '${adKeys[adIndex]}',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    `;
+                    adDiv.appendChild(adScriptConfig);
+                    
+                    const adScriptInvoke = document.createElement('script');
+                    adScriptInvoke.type = 'text/javascript';
+                    adScriptInvoke.src = `//roastwearwritten.com/${adKeys[adIndex]}/invoke.js`;
+                    adDiv.appendChild(adScriptInvoke);
+                    
                     adIndex++;
-                    if (adIndex <= 5) {
-                        const adDiv = document.createElement('div');
-                        adDiv.className = 'ad-container';
-                        adDiv.innerHTML = `
-                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                            <ins class="adsbygoogle"
-                                style="display:block; text-align:center;"
-                                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                                data-ad-slot="YYYYYYYYYY"
-                                data-ad-format="auto"></ins>
-                            <script>
-                                (adsbygoogle = window.adsbygoogle || []).push({});
-                            </script>
-                        `;
-                        gallery.appendChild(adDiv);
-                    }
                 }
                 const img = document.createElement('img');
                 img.src = images[i];
