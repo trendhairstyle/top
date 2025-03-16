@@ -2,113 +2,102 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Halaman dengan Gambar dan Iklan</title>
+    <meta name="viewport" content="width=500, initial-scale=1">
+    <meta name="description" content="Galeri gambar acak dengan tampilan seperti Instagram">
+    <title>Galeri Gambar</title>
     <style>
         body {
-            width: 500px;
             background-color: black;
             color: white;
+            width: 500px;
             margin: auto;
             font-family: Arial, sans-serif;
         }
-        header {
-            text-align: center;
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        article {
-            padding: 15px;
-            text-align: justify;
-        }
         .image-container {
-            text-align: center;
-            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
         }
-        img {
+        .image-container img {
             width: 100%;
-            height: auto;
-            display: block;
-            margin-bottom: 10px;
+            aspect-ratio: 3 / 2;
+            object-fit: cover;
+            border-radius: 5px;
         }
-        .ad {
-            background-color: gray;
-            color: black;
+        .ad-container {
             text-align: center;
-            padding: 10px;
             margin: 10px 0;
+            background: gray;
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <header>Judul Halaman</header>
-    <article>
-        <p>Ini adalah artikel yang berisi konten menarik yang bisa dibaca oleh pengunjung.</p>
-    </article>
-    <div class="image-container" id="image-container"></div>
-
+    <div id="gallery"></div>
+    
     <script>
-        async function loadAds(index, adContainer) {
-            try {
-                const response = await fetch(`iklan${index}.txt`);
-                if (!response.ok) throw new Error(`File iklan${index}.txt tidak ditemukan`);
-                
-                const adScriptText = await response.text();
-                
-                // Buat elemen script baru dan tambahkan ke DOM
-                let scriptTag = document.createElement('script');
-                scriptTag.type = 'text/javascript';
-                scriptTag.textContent = adScriptText;
-                document.body.appendChild(scriptTag);
-                
-                adContainer.innerHTML = "Iklan ditampilkan";
-            } catch (error) {
-                console.error("Gagal memuat file iklan:", error);
-            }
-        }
-
-        async function loadImages() {
+        async function fetchImages() {
             try {
                 const response = await fetch('image.txt');
-                if (!response.ok) throw new Error("File tidak ditemukan");
-                
                 const text = await response.text();
-                console.log("File image.txt berhasil dimuat:", text);
-                
-                const links = text.split('\n').map(link => link.trim()).filter(link => link);
-                console.log("Daftar gambar:", links);
-                
-                const container = document.getElementById('image-container');
-                let count = 0;
-                let adIndex = 1;
-
-                for (const link of links) {
-                    let img = document.createElement('img');
-                    img.src = link;
-                    img.onerror = function() {
-                        console.error("Gagal memuat gambar:", this.src);
-                        this.style.display = 'none';
-                    };
-                    container.appendChild(img);
-                    count++;
-
-                    if (count % 3 === 0) {
-                        let ad = document.createElement('div');
-                        ad.className = 'ad';
-                        ad.textContent = 'Memuat iklan...';
-                        container.appendChild(ad);
-
-                        await loadAds(adIndex, ad);
-                        adIndex = (adIndex % 10) + 1; // Rotasi dari iklan1.txt sampai iklan10.txt
-                    }
-                }
+                let images = text.split('\n').map(img => img.trim()).filter(img => img);
+                images = shuffleArray(images).slice(0, 15); // Ambil 15 gambar unik
+                displayImages(images);
             } catch (error) {
-                console.error("Gagal memuat file image.txt:", error);
+                console.error("Gagal mengambil daftar gambar", error);
             }
         }
-
-        loadImages();
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        function displayImages(images) {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            let adIndex = 0;
+            for (let i = 0; i < images.length; i++) {
+                if (i % 3 === 0) {
+                    adIndex++;
+                    if (adIndex <= 5) {
+                        const adDiv = document.createElement('div');
+                        adDiv.className = 'ad-container';
+                        adDiv.innerHTML = `
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <ins class="adsbygoogle"
+                                style="display:block; text-align:center;"
+                                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                                data-ad-slot="YYYYYYYYYY"
+                                data-ad-format="auto"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+                        `;
+                        gallery.appendChild(adDiv);
+                    }
+                }
+                const img = document.createElement('img');
+                img.src = images[i];
+                img.onerror = function () {
+                    this.remove();
+                    const remainingImages = images.filter(src => src !== this.src);
+                    if (remainingImages.length > 0) {
+                        const newImg = document.createElement('img');
+                        newImg.src = remainingImages[Math.floor(Math.random() * remainingImages.length)];
+                        gallery.appendChild(newImg);
+                    }
+                };
+                gallery.appendChild(img);
+            }
+        }
+        
+        fetchImages();
     </script>
 </body>
 </html>
