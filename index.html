@@ -21,9 +21,11 @@
         }
         .image-container img {
             width: 100%;
+            height: auto;
             aspect-ratio: 3 / 2;
             object-fit: cover;
             border-radius: 5px;
+            display: block;
         }
         .ad-container {
             text-align: center;
@@ -37,7 +39,7 @@
     </style>
 </head>
 <body>
-    <div id="gallery"></div>
+    <div id="gallery" class="image-container"></div>
     
     <script>
         const adKeys = [
@@ -106,6 +108,8 @@
                     if (remainingImages.length > 0) {
                         const newImg = document.createElement('img');
                         newImg.src = remainingImages[Math.floor(Math.random() * remainingImages.length)];
+                        newImg.style.aspectRatio = '3 / 2';
+                        newImg.style.objectFit = 'cover';
                         gallery.appendChild(newImg);
                     }
                 };
