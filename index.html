@@ -88,20 +88,22 @@
             let counter = 0;
             
             while (imageIndex < allImages.length && counter < 6) { // Load 6 gambar per batch
-                const img = document.createElement('img');
-                img.src = allImages[imageIndex];
-                img.style.aspectRatio = '4 / 5';
-                img.style.objectFit = 'cover';
-                img.onerror = function () {
-                    this.remove();
-                };
-                gallery.appendChild(img);
-                imageIndex++;
-                counter++;
-                
                 if (counter % 3 === 0 && adIndex < ads.length) {
                     insertAd(gallery, adIndex);
                     adIndex++;
+                }
+                
+                if (imageIndex < allImages.length) {
+                    const img = document.createElement('img');
+                    img.src = allImages[imageIndex];
+                    img.style.aspectRatio = '4 / 5';
+                    img.style.objectFit = 'cover';
+                    img.onerror = function () {
+                        this.remove();
+                    };
+                    gallery.appendChild(img);
+                    imageIndex++;
+                    counter++;
                 }
             }
             loading = false;
