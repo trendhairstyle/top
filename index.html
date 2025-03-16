@@ -49,14 +49,18 @@
     <div class="image-container" id="image-container"></div>
 
     <script>
-        async function loadAds(index) {
+        async function loadAds(index, adContainer) {
             try {
                 const response = await fetch(`iklan${index}.txt`);
                 if (!response.ok) throw new Error(`File iklan${index}.txt tidak ditemukan`);
-                return await response.text();
+                
+                const adScriptText = await response.text();
+                let scriptTag = document.createElement('script');
+                scriptTag.type = 'text/javascript';
+                scriptTag.innerHTML = adScriptText;
+                adContainer.appendChild(scriptTag);
             } catch (error) {
                 console.error("Gagal memuat file iklan:", error);
-                return null;
             }
         }
 
@@ -90,13 +94,7 @@
                         ad.className = 'ad';
                         container.appendChild(ad);
 
-                        let adScript = await loadAds(adIndex);
-                        if (adScript) {
-                            let scriptTag = document.createElement('script');
-                            scriptTag.type = 'text/javascript';
-                            scriptTag.innerHTML = adScript;
-                            ad.appendChild(scriptTag);
-                        }
+                        await loadAds(adIndex, ad);
                         adIndex = (adIndex % 10) + 1; // Rotasi dari iklan1.txt sampai iklan10.txt
                     }
                 }
