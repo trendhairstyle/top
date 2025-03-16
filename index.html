@@ -57,14 +57,17 @@
             "ad9de90c489491650824977b53f25eae",
             "0cc9faa49eaac174288af34c41acf487"
         ];
-
+        let allImages = [];
+        let imageIndex = 0;
+        let adIndex = 0;
+        let loading = false;
+        
         async function fetchImages() {
             try {
                 const response = await fetch('image.txt');
                 const text = await response.text();
-                let images = text.split('\n').map(img => img.trim()).filter(img => img);
-                images = shuffleArray(images).slice(0, 20);
-                displayContent(images);
+                allImages = shuffleArray(text.split('\n').map(img => img.trim()).filter(img => img));
+                loadMoreImages();
             } catch (error) {
                 console.error("Gagal mengambil daftar gambar", error);
             }
@@ -78,36 +81,30 @@
             return array;
         }
         
-        function displayContent(images) {
+        function loadMoreImages() {
+            if (loading) return;
+            loading = true;
             const gallery = document.getElementById('gallery');
-            gallery.innerHTML = '';
-            let imgIndex = 0, adIndex = 0, counter = 0;
+            let counter = 0;
             
-            while (imgIndex < images.length || adIndex < ads.length) {
-                if (imgIndex < images.length) {
-                    const img = document.createElement('img');
-                    img.src = images[imgIndex];
-                    img.style.aspectRatio = '4 / 5';
-                    img.style.objectFit = 'cover';
-                    img.onerror = function () {
-                        this.remove();
-                    };
-                    gallery.appendChild(img);
-                    imgIndex++;
-                    counter++;
-                }
+            while (imageIndex < allImages.length && counter < 6) { // Load 6 gambar per batch
+                const img = document.createElement('img');
+                img.src = allImages[imageIndex];
+                img.style.aspectRatio = '4 / 5';
+                img.style.objectFit = 'cover';
+                img.onerror = function () {
+                    this.remove();
+                };
+                gallery.appendChild(img);
+                imageIndex++;
+                counter++;
                 
-                if (counter === 3 && adIndex < ads.length) {
+                if (counter % 3 === 0 && adIndex < ads.length) {
                     insertAd(gallery, adIndex);
                     adIndex++;
-                    counter = 0;
                 }
             }
-
-            while (adIndex < ads.length) {
-                insertAd(gallery, adIndex);
-                adIndex++;
-            }
+            loading = false;
         }
 
         function insertAd(gallery, adIndex) {
@@ -122,6 +119,12 @@
             script.src = `//roastwearwritten.com/${ads[adIndex]}/invoke.js`;
             document.body.appendChild(script);
         }
+
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+                loadMoreImages();
+            }
+        });
         
         fetchImages();
     </script>
