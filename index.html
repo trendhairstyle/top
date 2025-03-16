@@ -41,11 +41,11 @@
     
     <script>
         const ads = [
-            "//roastwearwritten.com/9510d3602b56c57cff4611848c6319bb/invoke.js",
-            "//roastwearwritten.com/b3a97568ba491ccce84d0a7e4860c794/invoke.js",
-            "//roastwearwritten.com/89cc20f33c2c51acee67061d97510ab0/invoke.js",
-            "//roastwearwritten.com/ad9de90c489491650824977b53f25eae/invoke.js",
-            "//roastwearwritten.com/0cc9faa49eaac174288af34c41acf487/invoke.js"
+            "9510d3602b56c57cff4611848c6319bb",
+            "b3a97568ba491ccce84d0a7e4860c794",
+            "89cc20f33c2c51acee67061d97510ab0",
+            "ad9de90c489491650824977b53f25eae",
+            "0cc9faa49eaac174288af34c41acf487"
         ];
 
         async function fetchImages() {
@@ -89,13 +89,14 @@
                 if (adIndex < ads.length) {
                     const adDiv = document.createElement('div');
                     adDiv.className = 'ad-container';
+                    adDiv.id = `container-${ads[adIndex]}`;
                     gallery.appendChild(adDiv);
 
                     const script = document.createElement('script');
                     script.async = true;
                     script.dataset.cfasync = "false";
-                    script.src = ads[adIndex];
-                    adDiv.appendChild(script);
+                    script.src = `//roastwearwritten.com/${ads[adIndex]}/invoke.js`;
+                    document.body.appendChild(script);
                     adIndex++;
                 }
             }
