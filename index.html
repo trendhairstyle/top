@@ -63,7 +63,7 @@
                 const response = await fetch('image.txt');
                 const text = await response.text();
                 let images = text.split('\n').map(img => img.trim()).filter(img => img);
-                images = shuffleArray(images).slice(0, 15);
+                images = shuffleArray(images).slice(0, 20);
                 displayContent(images);
             } catch (error) {
                 console.error("Gagal mengambil daftar gambar", error);
@@ -98,20 +98,29 @@
                 }
                 
                 if (counter === 3 && adIndex < ads.length) {
-                    const adDiv = document.createElement('div');
-                    adDiv.className = 'ad-container';
-                    adDiv.id = `container-${ads[adIndex]}`;
-                    gallery.appendChild(adDiv);
-
-                    const script = document.createElement('script');
-                    script.async = true;
-                    script.dataset.cfasync = "false";
-                    script.src = `//roastwearwritten.com/${ads[adIndex]}/invoke.js`;
-                    document.body.appendChild(script);
+                    insertAd(gallery, adIndex);
                     adIndex++;
                     counter = 0;
                 }
             }
+
+            while (adIndex < ads.length) {
+                insertAd(gallery, adIndex);
+                adIndex++;
+            }
+        }
+
+        function insertAd(gallery, adIndex) {
+            const adDiv = document.createElement('div');
+            adDiv.className = 'ad-container';
+            adDiv.id = `container-${ads[adIndex]}`;
+            gallery.appendChild(adDiv);
+
+            const script = document.createElement('script');
+            script.async = true;
+            script.dataset.cfasync = "false";
+            script.src = `//roastwearwritten.com/${ads[adIndex]}/invoke.js`;
+            document.body.appendChild(script);
         }
         
         fetchImages();
