@@ -74,7 +74,7 @@
         function displayContent(images) {
             const gallery = document.getElementById('gallery');
             gallery.innerHTML = '';
-            let imgIndex = 0, adIndex = 0;
+            let imgIndex = 0, adIndex = 0, counter = 0;
             
             while (imgIndex < images.length || adIndex < ads.length) {
                 if (imgIndex < images.length) {
@@ -87,9 +87,10 @@
                     };
                     gallery.appendChild(img);
                     imgIndex++;
+                    counter++;
                 }
                 
-                if (adIndex < ads.length) {
+                if (counter === 3 && adIndex < ads.length) {
                     const adDiv = document.createElement('div');
                     adDiv.className = 'ad-container';
                     adDiv.id = `container-${ads[adIndex]}`;
@@ -101,6 +102,7 @@
                     script.src = `//roastwearwritten.com/${ads[adIndex]}/invoke.js`;
                     document.body.appendChild(script);
                     adIndex++;
+                    counter = 0;
                 }
             }
         }
