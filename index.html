@@ -22,7 +22,7 @@
         .image-container img {
             width: 100%;
             height: auto;
-            aspect-ratio: 3 / 2;
+            aspect-ratio: 2 / 3;
             object-fit: cover;
             border-radius: 5px;
             display: block;
@@ -102,13 +102,15 @@
                 }
                 const img = document.createElement('img');
                 img.src = images[i];
+                img.style.aspectRatio = '2 / 3';
+                img.style.objectFit = 'cover';
                 img.onerror = function () {
                     this.remove();
                     const remainingImages = images.filter(src => src !== this.src);
                     if (remainingImages.length > 0) {
                         const newImg = document.createElement('img');
                         newImg.src = remainingImages[Math.floor(Math.random() * remainingImages.length)];
-                        newImg.style.aspectRatio = '3 / 2';
+                        newImg.style.aspectRatio = '2 / 3';
                         newImg.style.objectFit = 'cover';
                         gallery.appendChild(newImg);
                     }
