@@ -49,6 +49,17 @@
     <div class="image-container" id="image-container"></div>
 
     <script>
+        async function loadAds(index) {
+            try {
+                const response = await fetch(`iklan${index}.txt`);
+                if (!response.ok) throw new Error(`File iklan${index}.txt tidak ditemukan`);
+                return await response.text();
+            } catch (error) {
+                console.error("Gagal memuat file iklan:", error);
+                return null;
+            }
+        }
+
         async function loadImages() {
             try {
                 const response = await fetch('image.txt');
@@ -62,6 +73,7 @@
                 
                 const container = document.getElementById('image-container');
                 let count = 0;
+                let adIndex = 1;
 
                 for (const link of links) {
                     let img = document.createElement('img');
@@ -78,23 +90,14 @@
                         ad.className = 'ad';
                         container.appendChild(ad);
 
-                        let script1 = document.createElement('script');
-                        script1.type = 'text/javascript';
-                        script1.innerHTML = `
-                            atOptions = {
-                                'key' : '32417884c3de3b64cea14b0307a6b0c1',
-                                'format' : 'iframe',
-                                'height' : 250,
-                                'width' : 300,
-                                'params' : {}
-                            };
-                        `;
-                        ad.appendChild(script1);
-
-                        let script2 = document.createElement('script');
-                        script2.type = 'text/javascript';
-                        script2.src = "//roastwearwritten.com/32417884c3de3b64cea14b0307a6b0c1/invoke.js";
-                        ad.appendChild(script2);
+                        let adScript = await loadAds(adIndex);
+                        if (adScript) {
+                            let scriptTag = document.createElement('script');
+                            scriptTag.type = 'text/javascript';
+                            scriptTag.innerHTML = adScript;
+                            ad.appendChild(scriptTag);
+                        }
+                        adIndex = (adIndex % 10) + 1; // Rotasi dari iklan1.txt sampai iklan10.txt
                     }
                 }
             } catch (error) {
