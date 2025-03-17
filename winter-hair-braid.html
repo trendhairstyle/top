@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=500, initial-scale=1">
+    <meta name="description" content="Best hairstyle ideas">
+    <title>Hairstyle Ideas</title>
+    
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            width: 500px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            justify-content: center;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
+            border-radius: 5px;
+            display: block;
+        }
+        .ad-container {
+            text-align: center;
+            width: 500px;
+            height: 370px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1px 0;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Hairstyle</div>
+    <div id="gallery" class="image-container"></div>
+    
+    <script>
+        const ads = [
+            "9510d3602b56c57cff4611848c6319bb",
+            "b3a97568ba491ccce84d0a7e4860c794",
+            "074079ff3510493ba423742755b50888",
+            "ad9de90c489491650824977b53f25eae",
+            "f89f1e47ae89fe236242225372e67c92"
+        ];
+        let allImages = [];
+        let imageIndex = 0;
+        let adIndex = 0;
+        let loading = false;
+        
+        async function fetchImages() {
+            try {
+                const response = await fetch('image.txt');
+                const text = await response.text();
+                allImages = shuffleArray(text.split('\n').map(img => img.trim()).filter(img => img));
+                loadMoreImages();
+            } catch (error) {
+                console.error("Gagal mengambil daftar gambar", error);
+            }
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        function loadMoreImages() {
+            if (loading) return;
+            loading = true;
+            const gallery = document.getElementById('gallery');
+            let counter = 0;
+            
+            while (imageIndex < allImages.length && counter < 6) { // Load 6 gambar per batch
+                if (counter % 3 === 0 && adIndex < ads.length) {
+                    insertAd(gallery, adIndex);
+                    adIndex++;
+                }
+                
+                if (imageIndex < allImages.length) {
+                    const img = document.createElement('img');
+                    img.src = allImages[imageIndex];
+                    img.style.aspectRatio = '4 / 5';
+                    img.style.objectFit = 'cover';
+                    img.onerror = function () {
+                        this.remove();
+                    };
+                    gallery.appendChild(img);
+                    imageIndex++;
+                    counter++;
+                }
+            }
+            loading = false;
+        }
+
+        function insertAd(gallery, adIndex) {
+            const adDiv = document.createElement('div');
+            adDiv.className = 'ad-container';
+            adDiv.id = `container-${ads[adIndex]}`;
+            gallery.appendChild(adDiv);
+
+            const script = document.createElement('script');
+            script.async = true;
+            script.dataset.cfasync = "false";
+            script.src = `//roastwearwritten.com/${ads[adIndex]}/invoke.js`;
+            document.body.appendChild(script);
+        }
+
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+                loadMoreImages();
+            }
+        });
+        
+        fetchImages();
+    </script>
+</body>
+</html>
